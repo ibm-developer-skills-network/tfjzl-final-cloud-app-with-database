@@ -1,15 +1,37 @@
+## Online Course — Assessment Feature (My Contribution)
 
-**General Notes**
+This repository contains an online course application built with Django. I was responsible for designing and implementing the course assessment feature end-to-end: modeling exam data, rendering questions in the UI, capturing submissions, and evaluating results.
 
-An `onlinecourse` app has already been provided in this repo upon which you will be adding a new assesement feature.
+## What I built
 
-- If you want to develop the final project on Theia hosted by [IBM Developer Skills Network](https://labs.cognitiveclass.ai/), you will need to create the same project structure on Theia workspace and save it everytime you close the browser
-- Or you could develop the final project locally by setting up your own Python runtime and IDE
-- Hints for the final project are left on source code files
-- You may choose any cloud platform for deployment (default is IBM Cloud Foundry)
-- Depends on your deployment, you may choose any SQL database Django supported such as SQLite3, PostgreSQL, and MySQL (default is SQLite3)
+- Data model
 
-**ER Diagram**
-For your reference, we have prepared the ER diagram design for the new assesement feature.
+- Question with a configurable grade
 
-![Onlinecourse ER Diagram](https://github.com/ibm-developer-skills-network/final-cloud-app-with-database/blob/master/static/media/course_images/onlinecourse_app_er.png)
+- Choice with is_correct flag (supports single and multiple correct answers)
+
+- Submission that stores selected choices per attempt (M2M → Choice)
+
+- Admin authoring
+
+- Created/registered admin forms so instructors can build exams: Course → Questions → Choices
+
+- Views & URLs
+
+- Course detail view that renders the exam form
+
+- Submission view that validates and persists selected choices
+
+- Result view that evaluates the attempt and displays per-question feedback + total score
+
+- Scoring logic
+
+## Tech stack
+
+Python 3.10+
+
+Django 4.x/5.x
+
+SQLite 
+
+Django Templates + Bootstrap for styling
