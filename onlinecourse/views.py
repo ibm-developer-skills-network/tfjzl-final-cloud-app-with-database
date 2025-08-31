@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 # <HINT> Import any new Models here
-from .models import Course, Enrollment
+from .models import Course, Enrollment, Question, Choice, Submission
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -111,6 +111,17 @@ def enroll(request, course_id):
          # Add each selected choice object to the submission object
          # Redirect to show_exam_result with the submission id
 #def submit(request, course_id):
+def submit(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    user = request.user
+    enrollment = Enrollment.objects.get(user=user, course=course)
+    submission = Submission.objects.create(enrollment=enrollment)
+    choice_ids = extract_answers(request)
+    for id in choice_ids:
+        choice = Choice.objects.get(pk=id)
+        submission.choices.add(choice)
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:exam_results', args=(course_id, submission.id,)))
+
 
 
 # An example method to collect the selected choices from the exam form from the request object
@@ -134,3 +145,18 @@ def extract_answers(request):
 
 
 
+def show_exam_result(request, course_id, submission_id):
+    context = {}
+    total_score = 0
+    course = Course.objects.get(pk=course_id)
+    submission = get_object_or_404(Submission, pk=submission_id)
+    choice_ids = submission.choices.values_list('pk', flat=True)
+    for id in choice_ids :
+        choice = Choice.objects.get(pk=id)
+        if choice.is_correct:
+            question = Question.objects.get(choice=choice)
+            total_score = total_score + question.question_grade
+    context['selected_ids'] = choice_ids
+    context['total_score'] = total_score
+    context['course'] = course
+    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
