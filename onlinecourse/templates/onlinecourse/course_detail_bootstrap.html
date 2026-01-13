@@ -1,56 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-     {% load static %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <meta charset="UTF-8">
-</head>
+{% if user.is_authenticated %}
+  <h3 class="mt-4">Examen du cours</h3>
 
-<body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                  <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
-                <li>
-                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
-                    <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-                </li>
-                {% else %}
-                <li>
-                    <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
-                            <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
-                        </div>
-                    </form>
-                </li>
-                {% endif %}
-            </ul>
+  <!-- Bouton pour commencer l'examen -->
+  <button class="btn btn-primary mb-3" type="button" data-toggle="collapse" data-target="#examSection" aria-expanded="false" aria-controls="examSection">
+    Commencer l'examen
+  </button>
+
+  <!-- Section rétractable de l'examen -->
+  <div class="collapse" id="examSection">
+    <form method="post" action="{% url 'submit_exam' course.id %}">
+      {% csrf_token %}
+
+      <!-- Boucle sur les questions -->
+      {% for question in course.question_set.all %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Question {{ forloop.counter }}: {{ question.question_text }}</h5>
+
+            <!-- Boucle sur les choix de la question -->
+            {% for choice in question.choice_set.all %}
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="choice_{{ question.id }}" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                <label class="form-check-label" for="choice_{{ choice.id }}">
+                  {{ choice.choice_text }}
+                </label>
+              </div>
+            {% endfor %}
+          </div>
         </div>
-    </nav>
+      {% endfor %}
 
-    <!-- Page content -->
-    <div class="container-fluid">
-            <h2>{{ course.name }}</h2>
-            <div class="card-columns-vertical">
-                {% for lesson in course.lesson_set.all %}
-                    <div class="card mt-1">
-                        <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <div class="card-body">{{lesson.content}}</div>
-                    </div>
-                {% endfor %}
-            </div>
-            <!-- Course detail template changes go here -->
-    </div>
-</body>
-</html>
+      <button type="submit" class="btn btn-success mb-3">Soumettre l’examen</button>
+    </form>
+  </div>
+{% endif %}
