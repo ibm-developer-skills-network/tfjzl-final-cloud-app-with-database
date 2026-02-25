@@ -18,22 +18,39 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
-                <li>
-                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
-                    <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-                </li>
-                {% else %}
-                <li>
-                    <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
-                            <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#exam">
+                    Start Exam
+                </button>
+
+                <div id="exam" class="collapse mt-3">
+                <form method="POST" action="{% url 'onlinecourse:submit' course.id %}">
+                    {% csrf_token %}
+
+                    {% for question in course.question_set.all %}
+                        <div class="mb-3">
+                            <h5>{{ question.content }}</h5>
+
+                            {% for choice in question.choice_set.all %}
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        name="choice"
+                                        value="{{ choice.id }}">
+                                    <label class="form-check-label">
+                                        {{ choice.content }}
+                                    </label>
+                                </div>
+                            {% endfor %}
                         </div>
-                    </form>
-                </li>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-success">
+                        Submit
+                    </button>
+                </form>
+                </div>
+
                 {% endif %}
             </ul>
         </div>
