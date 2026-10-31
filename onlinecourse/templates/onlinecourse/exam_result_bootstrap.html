@@ -36,17 +36,17 @@
         <h5>Exam results</h5>
         {% for question in course.question_set.all %}
         <div class="card mt-1">
-            <div class="card-header"><h5>{{ question.content }}</h5></div>
+            <div class="card-header"><h5>{{ question.question_text }}</h5></div>
             <div class="card-body">
                 {% for choice in question.choice_set.all %}
                     {% if choice.is_correct and choice in choices %}
-                        <div class="text-success">Correct answer: {{ choice.content }}</div>
+                        <div class="text-success">Correct answer: {{ choice.choice_text }}</div>
                     {% elif choice.is_correct %}
-                        <div class="text-warning">Not selected: {{ choice.content }}</div>
+                        <div class="text-warning">Not selected: {{ choice.choice_text }}</div>
                     {% elif choice in choices %}
-                        <div class="text-danger">Wrong answer: {{ choice.content }}</div>
+                        <div class="text-danger">Wrong answer: {{ choice.choice_text }}</div>
                     {% else %}
-                        <div>{{ choice.content }}</div>
+                        <div>{{ choice.choice_text }}</div>
                     {% endif %}
                 {% endfor %}
             </div>
